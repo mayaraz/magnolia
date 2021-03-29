@@ -1,0 +1,2 @@
+# magnolia
+Android project
