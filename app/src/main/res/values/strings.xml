@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Magnolia</string>
+    <string name="garden">go to your garden</string>
+    <string name="add_plant">new plant</string>
+    <string name="name_field">plant name</string>
+    <string name="interval_field">feed interval</string>
+    <string name="save_button">save</string>
+</resources>
