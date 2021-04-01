@@ -5,4 +5,5 @@
     <string name="name_field">plant name</string>
     <string name="interval_field">feed interval</string>
     <string name="save_button">save</string>
+    <string name="time_unit">seconds</string>
 </resources>
