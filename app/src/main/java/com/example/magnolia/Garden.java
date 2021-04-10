@@ -10,22 +10,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class Garden extends AppCompatActivity {
 
-    protected void increaseStage(JSONObject configJson) {
+    protected void increaseStage(JSONObject configJson, int stagesAmount) {
         int currentStage = 0;
         try {
             currentStage = configJson.getInt("currentStage");
-            currentStage++;
+            currentStage += stagesAmount;
             configJson.put("currentStage", currentStage);
         } catch (JSONException e) {
             Log.e("Garden", "error while trying to read and update configJson");
         }
-        ConfigFile.writeJson(configJson, this.getApplicationContext());
     }
 
     protected void updateStage(JSONObject configJson){
@@ -41,7 +41,6 @@ public class Garden extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
         Date now = calendar.getTime();
-
         try {
             calendar.setTime(sdf.parse(nextStageTime));
         } catch (ParseException e) {
@@ -49,13 +48,20 @@ public class Garden extends AppCompatActivity {
         }
         Date nextStageTimeDate = calendar.getTime();
         if (now.after(nextStageTimeDate)) {
-            increaseStage(configJson);
-            calendar.add(Calendar.SECOND, plantInterval);
+
+            long differenceInMilliseconds = Math.abs(now.getTime() - nextStageTimeDate.getTime() );
+//        long differenceInDays = (differenceInMilliseconds / (1000 * 60 * 60 * 24));
+            int differenceInSeconds = (int) differenceInMilliseconds / 1000;
+            int stagesAmount = differenceInSeconds / plantInterval;
+            int stageRemainder = differenceInSeconds % plantInterval;
+            increaseStage(configJson, stagesAmount);
+            calendar.add(Calendar.SECOND, plantInterval - stageRemainder);
             try {
                 configJson.put("nextStageTime", calendar.getTime().toString());
             } catch (JSONException e) {
                 Log.e("Garden", "error while trying to set nextStageTime in configJson");
             }
+            ConfigFile.writeJson(configJson, this.getApplicationContext());
         }
     }
 
